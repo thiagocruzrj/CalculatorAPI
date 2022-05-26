@@ -15,8 +15,8 @@ namespace Calculator.API.Services
 
         public async Task<decimal> Sum(string num1, string num2)
         {
-            ConvertToDecimal(num1, num2);
-            return await Task.FromResult(_value1 + _value2);
+                ConvertToDecimal(num1, num2);
+                return await Task.FromResult(_value1 + _value2);
         }
 
         public async Task<decimal> Subtract(string num1, string num2)
