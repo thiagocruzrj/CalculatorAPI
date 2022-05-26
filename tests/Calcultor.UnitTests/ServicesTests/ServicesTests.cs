@@ -5,10 +5,12 @@ namespace Calculator.UnitTests.ServicesTests
 {
     public class ServicesTests
     {
+        IOperationsService _service;
         IValidation _validation;
 
         public ServicesTests()
         {
+            _service = new OperationsService();
             _validation = new Validation();
         }
 
@@ -17,10 +19,18 @@ namespace Calculator.UnitTests.ServicesTests
         [InlineData(null, null)]
         [InlineData(null, "")]
         [InlineData("", null)]
+        [InlineData("3", "")]
         [Trait("Calculator", "ToolsTests")]
         public void Calculator_UsingValidation_ShouldThrowFormatException(string num1, string num2)
         {
             Assert.Throws<FormatException>(() => _validation.Validate(num1, num2));
+        }
+
+        [Fact]
+        public async Task Calculator_DivideOperatorByZero_ShouldThrowDivideByZeroException()
+        {
+            //Assert
+            await Assert.ThrowsAsync<DivideByZeroException>(async () => await _service.Divide("0", "3"));
         }
     }
 }
