@@ -1,6 +1,4 @@
-using Azure.Core;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
+using Calculator.API.Configurations;
 using Calculator.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -8,28 +6,14 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var apiKey = new ApiKeyService();
 
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IOperationsService, OperationsService>();
-
-var options = new SecretClientOptions()
-{
-    Retry =
-    {
-        Delay = TimeSpan.FromSeconds(2),
-        MaxDelay = TimeSpan.FromSeconds(16),
-        MaxRetries = 5,
-        Mode = RetryMode.Exponential
-    }
-};
-
-var client = new SecretClient(new Uri("https://calculatorkv.vault.azure.net/"), new DefaultAzureCredential(), options);
-
-KeyVaultSecret token = client.GetSecret("Token");
+builder.Services.AddScoped<IApiKeyService, ApiKeyService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -37,7 +21,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(token.Value)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(apiKey.GetApiKey())),
             ValidateIssuer = false,
             ValidateAudience = false
         };
@@ -95,3 +79,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

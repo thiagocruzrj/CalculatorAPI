@@ -20,13 +20,14 @@ namespace Calculator.UnitTests.ServicesTests
         [InlineData(null, "")]
         [InlineData("", null)]
         [InlineData("3", "")]
-        [Trait("Calculator", "ToolsTests")]
+        [Trait("Calculator", "ServiceTests")]
         public void Calculator_UsingValidation_ShouldThrowFormatException(string num1, string num2)
         {
             Assert.Throws<FormatException>(() => _validation.Validate(num1, num2));
         }
 
         [Fact]
+        [Trait("Calculator", "ServiceTests")]
         public async Task Calculator_DivideOperatorByZero_ShouldThrowDivideByZeroException()
         {
             //Assert

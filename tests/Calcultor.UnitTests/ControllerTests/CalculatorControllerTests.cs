@@ -1,15 +1,15 @@
-using Calculator.API.Controllers;
+using Calculator.API.Controllers.V1;
 using Calculator.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Calculator.UnitTests.ControllerTests
 {
-    public class ControllerTests
+    public class CalculatorControllerTests
     {
         CalculatorController _controller;
         IOperationsService _service;
 
-        public ControllerTests()
+        public CalculatorControllerTests()
         {
             _service = new OperationsService();
             _controller = new CalculatorController(_service);

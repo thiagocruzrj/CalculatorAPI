@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Calculator.API.Controllers
+namespace Calculator.API.Controllers.V1
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route(@"api/v1/[controller]")]
     [ApiController]
     public class CalculatorController : ControllerBase
     {
@@ -18,12 +18,12 @@ namespace Calculator.API.Controllers
 
         [HttpGet]
         [Route("/api/operation/sum")]
-        public async Task<IActionResult> Add(string value1, string value2) => 
+        public async Task<IActionResult> Add(string value1, string value2) =>
             Ok(await _service.Sum(value1, value2));
 
         [HttpGet]
         [Route("/api/operation/subtract")]
-        public async Task<IActionResult> Subtract(string value1, string value2) => 
+        public async Task<IActionResult> Subtract(string value1, string value2) =>
             Ok(await _service.Subtract(value1, value2));
 
         [HttpGet]
