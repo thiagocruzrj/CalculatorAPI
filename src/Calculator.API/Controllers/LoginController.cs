@@ -1,4 +1,7 @@
-﻿using Calculator.API.Swagger;
+﻿using Azure.Core;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Calculator.API.Swagger;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,17 +24,29 @@ namespace Calculator.API.Controllers
         [HttpPost]
         public IActionResult Login(LoginDTO model)
         {
-            if (model == null) 
-                BadRequest("Invalid client request");
-
-            if (model.UserName == _config["username"] && model.Password == _config["password"])
+            var options = new SecretClientOptions()
             {
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@2410"));
+                Retry =
+                {
+                    Delay = TimeSpan.FromSeconds(2),
+                    MaxDelay = TimeSpan.FromSeconds(16),
+                    MaxRetries = 5,
+                    Mode = RetryMode.Exponential
+                 }
+            };
+
+            var client = new SecretClient(new Uri("https://calculatorkv.vault.azure.net/"), new DefaultAzureCredential(), options);
+
+            KeyVaultSecret username = client.GetSecret("username");
+            KeyVaultSecret password = client.GetSecret("password");
+            KeyVaultSecret token = client.GetSecret("Token");
+
+            if (model.UserName == username.Value && model.Password == password.Value)
+            {
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(token.Value));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
                 var tokenOptions = new JwtSecurityToken(
-                    issuer: "CodeMaze",
-                    audience: "https://localhost:5001",
                     claims: new List<Claim>(),
                     expires: DateTime.Now.AddMinutes(5),
                     signingCredentials: signinCredentials
