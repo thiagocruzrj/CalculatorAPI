@@ -11,13 +11,20 @@ namespace Calculator.API.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        private readonly IConfiguration _config;
+
+        public LoginController(IConfiguration config)
+        {
+            _config = config;
+        }
+
         [HttpPost]
         public IActionResult Login(LoginDTO model)
         {
             if (model == null) 
                 BadRequest("Invalid client request");
 
-            if (model.UserName == "johndoe" && model.Password == "johndoe2410")
+            if (model.UserName == _config["username"] && model.Password == _config["password"])
             {
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@2410"));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
