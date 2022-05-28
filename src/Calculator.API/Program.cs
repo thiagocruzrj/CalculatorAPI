@@ -3,9 +3,22 @@ using Calculator.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.File("log.txt")
+    .CreateBootstrapLogger();
+
+Log.Information("Starting up");
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((ctx, lc) => lc
+       .WriteTo.File("log.txt")
+       .ReadFrom.Configuration(ctx.Configuration));
+
 var apiKey = new ApiKeyService();
 
 builder.Services.AddControllers();

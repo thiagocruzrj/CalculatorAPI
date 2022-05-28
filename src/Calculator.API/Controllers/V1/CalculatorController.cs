@@ -32,7 +32,7 @@ namespace Calculator.API.Controllers.V1
             Ok(await _service.Multiply(value1, value2));
 
         [HttpGet]
-        [Route("/api/opearion/divide")]
+        [Route("/api/operation/divide")]
         public async Task<IActionResult> Divide(string value1, string value2) =>
             Ok(await _service.Divide(value1, value2));
     }
